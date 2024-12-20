@@ -1,0 +1,160 @@
+form listview
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
+namespace baitaptuan4
+{
+    public partial class Form1 : Form
+    {
+
+        private BindingList<nhanvien> employeeList = new BindingList<nhanvien>();
+
+        public Form1()
+        {
+            InitializeComponent();
+            {
+                dataGridView1.DataSource = employeeList;
+
+                dataGridView1.AutoGenerateColumns = false;
+                dataGridView1.Columns.Add("MSNV", "MSNV");
+                dataGridView1.Columns.Add("Name", "Tên NV");
+                dataGridView1.Columns.Add("Lương", "Lương CB");
+
+                dataGridView1.Columns["MSNV"].DataPropertyName = "MSNV";
+                dataGridView1.Columns["Name"].DataPropertyName = "Name";
+                dataGridView1.Columns["Lương"].DataPropertyName = "Lương";
+            }
+        }
+
+
+            private void button1_Click(object sender, EventArgs e)
+            {
+            var form = new Form2();
+            if (form.ShowDialog() == DialogResult.OK)
+            {
+                employeeList.Add(form.nhanvienData);
+            }
+            }
+
+            private void Form1_Load(object sender, EventArgs e)
+            {
+
+            }
+
+            private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+            {
+
+            }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.CurrentRow != null)
+            {
+                var selectedEmployee = (nhanvien)dataGridView1.CurrentRow.DataBoundItem;
+                var employeeForm = new Form2(selectedEmployee);
+
+                if (employeeForm.ShowDialog() == DialogResult.OK)
+                {
+                    dataGridView1.Refresh();
+                }
+            }
+            else
+            {
+                MessageBox.Show("Vui lòng chọn nhân viên để sửa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.CurrentRow != null)
+            {
+                var selectedEmployee = (nhanvien)dataGridView1.CurrentRow.DataBoundItem;
+                employeeList.Remove(selectedEmployee);
+            }
+            else
+            {
+                MessageBox.Show("Vui lòng chọn nhân viên để xóa!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+    }
+    public class nhanvien
+    {
+        public string MSNV { get; set; }
+        public string Name { get; set; }
+        public decimal Lương { get; set; }
+    }
+}
+
+
+
+
+
+
+
+
+
+form nhân viên
+
+
+
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Xml.Linq;
+
+namespace baitaptuan4
+{
+    public partial class Form2 : Form
+    {
+        public nhanvien nhanvienData { get; private set; }
+        public Form2()
+        {
+            InitializeComponent();
+            nhanvienData = new nhanvien();
+        }
+
+        public Form2(nhanvien employee) : this()
+        {
+            nhanvienData = employee;
+            textBox1.Text = employee.MSNV;
+            textBox2.Text = employee.Name;
+            textBox3.Text = employee.Lương.ToString("N0");
+        }
+
+        private void Form2_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            nhanvienData.MSNV = textBox1.Text;
+            nhanvienData.Name = textBox2.Text;
+            nhanvienData.Lương = decimal.TryParse(textBox3.Text, out var Lương) ? Lương : 0;
+
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+        private void button2_Click(object sender, EventArgs e)
+        {
+            DialogResult = DialogResult.Cancel;
+            Close();
+        }
+    }
+
+}
